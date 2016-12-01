@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <map>
-
+#include <list>
 class Fecha {
 private:
 	int day;
@@ -10,43 +10,26 @@ private:
 	int year;
 public:
 	Fecha(int d, int m, int y);
-	bool operator() (const Fecha& fch, const Fecha& fch2)
-	{
-		if (fch.year < fch2.year) {
-			if (fch.month < fch2.month) {
-				if (fch.day < fch2.day) {
-					return true;
-				}
-			}
-		}
-		else return false;
-	}
-	//bool operator < (const Fecha &fch);
-	//bool operator == (const Fecha &fch);
+	friend inline bool operator< (const Fecha& fch, const Fecha& fch2);
+	friend inline bool operator==(const Fecha &fch, const Fecha& fch2);
 
 };
 
-//inline bool operator< (const Fecha& fch, const Fecha& fch2) {
-//	if (fch.year < fch2.year) { 
-//		if (fch.month < fch2.month) { 
-//			if (fch.day < fch2.day) { 
-//				return true; 
-//			}
-//		} 
-//	}
-//	else return false;
-//}
+inline bool operator< (const Fecha& fch, const Fecha& fch2) {
+	if (fch.year < fch2.year) { return true; }
+	else if (fch.month < fch2.month) { return true; }
+	else if (fch.day < fch2.day) { return true; }
 
-//bool Fecha::operator==(const Fecha &fch) {
-//	if ((*this).year == fch.year) {
-//		if ((*this).month == fch.month) {
-//			if ((*this).day == fch.day) {
-//				return true;
-//			}
-//		}
-//	}
-//	else return false;
-//}
+	else return false;
+}
+
+inline bool operator==(const Fecha &fch, const Fecha& fch2) {
+	if (fch.year == fch2.year) { return true; }
+	else if (fch.month == fch2.month) { return true; }
+	else if (fch.day == fch2.day) { return true; }
+
+	else return false;
+}
 
 Fecha::Fecha(int d, int m, int y){
 	day = d;
@@ -58,14 +41,28 @@ class Hora {
 private:
 	int hour;
 	int minutes;
-
 public:
 	Hora(int h, int m);
+	friend inline bool operator< (const Hora& hr, const Hora& hr2);
+	friend inline bool operator== (const Hora& hr, const Hora& hr2);
+
 };
 
 Hora::Hora(int h, int m) {
 	hour = h;
 	minutes = m;
+}
+
+inline bool operator< (const Hora& hr, const Hora& hr2) {
+	if (hr.hour < hr2.hour) { return true; }
+	else if (hr.minutes < hr2.minutes) { return true; }
+	else return false;
+}
+
+inline bool operator== (const Hora& hr, const Hora& hr2) {
+	if (hr.hour == hr2.hour) { return true; }
+	else if (hr.minutes == hr2.minutes) { return true; }
+	else return false;
 }
 
 
@@ -76,22 +73,38 @@ private:
 	std::map <const Fecha, std::map <const Hora, const std::string>> agnd;
 public:
 	Agenda();
-	void insertarEvento(const Fecha &fecha, const Hora &hora, const std::string& descripcion);
+	void insertarEvento(const Fecha& fecha, const Hora& hora, const std::string& descripcion);
+	std::list<std::pair<Hora, std::string>>eventosDia(const Fecha &fecha);
 	int GetSize() {	return agnd.size();	}
 };
 
 Agenda::Agenda(){}
 
+
 void Agenda::insertarEvento(const Fecha& fecha, const Hora& hora, const std::string& descripcion) {
 	evt.emplace(hora,descripcion);
 	agnd.emplace(fecha, evt);
-
 }
 
+std::list<std::pair<Hora, std::string>> Agenda::eventosDia(const Fecha &fecha) {
+	std::list <std::pair<Hora, std::string >> lst;
+	//auto it = agnd.find(fecha);
+	//if (it != agnd.end()) {
+	//}
+	Hora test(12,50);
+	for (auto it = agnd[fecha].begin(); it != agnd[fecha].end(); ++it) {
+		lst.push_back(it, agnd[fecha][it->first]);
+	}
+}
+
+
 void main() {
-	//Agenda agn;
-	const Fecha date(1,11,1997);
+	Agenda agn;
+	const Fecha date(11,1,1997);
 	const Hora time(12, 50);
-	//agn.insertarEvento(date,time,"Things to do");
-	//std::cout << agn.GetSize();
+	const Fecha date2(11, 2, 1997);
+	const Hora time2(12, 55);
+	agn.insertarEvento(date,time,"Things to do");
+	agn.insertarEvento(date2, time2, "Things to do");
+	std::cout << agn.GetSize();
 }
