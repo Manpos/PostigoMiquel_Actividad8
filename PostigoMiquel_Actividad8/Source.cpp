@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <iterator>
 #include <list>
 class Fecha {
 private:
@@ -72,30 +73,38 @@ class Agenda {
 private:
 	std::map <const Hora, const std::string> evt;
 	std::map <const Fecha, std::map <const Hora, const std::string>> agnd;
+	std::map <const Fecha, std::map <const Hora, const std::string>>::iterator itr1;
+	std::map <const Hora, const std::string>::iterator itr2;
 public:
 	Agenda();
 	void insertarEvento(const Fecha& fecha, const Hora& hora, const std::string& descripcion);
 	std::list<std::pair<Hora, std::string>>eventosDia(const Fecha &fecha);
 	int GetSize() {	return agnd.size();	}
+	int GetEvtSize() { return evt.size(); }
 };
 
 Agenda::Agenda(){}
 
 
 void Agenda::insertarEvento(const Fecha& fecha, const Hora& hora, const std::string& descripcion) {
-	evt.emplace(hora,descripcion);
-	agnd.emplace(fecha, evt);
+	evt.insert(std::pair<const Hora&, const std::string&> (hora, descripcion));
+	agnd[fecha] =  evt;
 }
 
 std::list<std::pair<Hora, std::string>> Agenda::eventosDia(const Fecha &fecha) {
 	std::list <std::pair<Hora, std::string >> lst;
-
+	int count = 0;
+	
 	for (auto it = agnd[fecha].begin(); it != agnd[fecha].end(); ++it) {
 		lst.push_back(std::pair<Hora, std::string> (it->first, it->second));
+
 	}
+
 	for (auto it = lst.begin(); it != lst.end(); ++it) {
-		std::cout << it->first.hour << ':' << it->first.minutes << " -> " << it->second << "\n";
+		count++;
+		std::cout << count << " " << it->first.hour << ':' << it->first.minutes << " -> " << it->second << "\n";
 	}
+	std::cout << "list size: "<< lst.size()<< "\n";
 	return lst;
 }
 
@@ -104,10 +113,14 @@ void main() {
 	Agenda agn;
 	const Fecha date(11,1,1997);
 	const Hora time(12, 50);
-	const Fecha date2(11, 2, 1997);
+	const Fecha date3(11, 1, 1997);
+	const Hora time3(12, 57);
+	const Fecha date2(11, 1, 1997);
 	const Hora time2(12, 55);
+	agn.insertarEvento(date3, time3, "Things to do");
 	agn.insertarEvento(date,time,"Things to do");
 	agn.insertarEvento(date2, time2, "Things to do");
 	agn.eventosDia(date);
-	std::cout << agn.GetSize();
+	std::cout << agn.GetSize() << "\n";
+	std::cout << agn.GetEvtSize() << "\n";
 }
