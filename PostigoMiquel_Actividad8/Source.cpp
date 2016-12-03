@@ -12,6 +12,7 @@ public:
 	Fecha(int d, int m, int y);
 	friend inline bool operator< (const Fecha& fch, const Fecha& fch2);
 	friend inline bool operator==(const Fecha &fch, const Fecha& fch2);
+	friend class Agenda;
 
 };
 
@@ -45,7 +46,7 @@ public:
 	Hora(int h, int m);
 	friend inline bool operator< (const Hora& hr, const Hora& hr2);
 	friend inline bool operator== (const Hora& hr, const Hora& hr2);
-
+	friend class Agenda;
 };
 
 Hora::Hora(int h, int m) {
@@ -88,13 +89,14 @@ void Agenda::insertarEvento(const Fecha& fecha, const Hora& hora, const std::str
 
 std::list<std::pair<Hora, std::string>> Agenda::eventosDia(const Fecha &fecha) {
 	std::list <std::pair<Hora, std::string >> lst;
-	//auto it = agnd.find(fecha);
-	//if (it != agnd.end()) {
-	//}
-	Hora test(12,50);
+
 	for (auto it = agnd[fecha].begin(); it != agnd[fecha].end(); ++it) {
-		lst.push_back(it, agnd[fecha][it->first]);
+		lst.push_back(std::pair<Hora, std::string> (it->first, it->second));
 	}
+	for (auto it = lst.begin(); it != lst.end(); ++it) {
+		std::cout << it->first.hour << ':' << it->first.minutes << " -> " << it->second << "\n";
+	}
+	return lst;
 }
 
 
@@ -106,5 +108,6 @@ void main() {
 	const Hora time2(12, 55);
 	agn.insertarEvento(date,time,"Things to do");
 	agn.insertarEvento(date2, time2, "Things to do");
+	agn.eventosDia(date);
 	std::cout << agn.GetSize();
 }
