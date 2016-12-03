@@ -79,6 +79,8 @@ public:
 	Agenda();
 	void insertarEvento(const Fecha& fecha, const Hora& hora, const std::string& descripcion);
 	std::list<std::pair<Hora, std::string>>eventosDia(const Fecha &fecha);
+	std::list<std::pair<Hora, std::string>>eventosDia(const Fecha& fecha, const Hora& desde, const Hora& hasta);
+	void elminarEventos(const Fecha &desde_fecha, const Hora& desde_hora, const Fecha& hasta_fecha, const Hora& hasta_hora);
 	int GetSize() {	return agnd.size();	}
 	int GetEvtSize() { return evt.size(); }
 };
@@ -97,15 +99,40 @@ std::list<std::pair<Hora, std::string>> Agenda::eventosDia(const Fecha &fecha) {
 	
 	for (auto it = agnd[fecha].begin(); it != agnd[fecha].end(); ++it) {
 		lst.push_back(std::pair<Hora, std::string> (it->first, it->second));
-
 	}
 
 	for (auto it = lst.begin(); it != lst.end(); ++it) {
 		count++;
 		std::cout << count << " " << it->first.hour << ':' << it->first.minutes << " -> " << it->second << "\n";
 	}
+
 	std::cout << "list size: "<< lst.size()<< "\n";
 	return lst;
+}
+
+std::list<std::pair<Hora, std::string>> Agenda::eventosDia(const Fecha& fecha, const Hora& desde, const Hora& hasta) {
+	std::list <std::pair<Hora, std::string>> lst;
+	for (auto it = agnd[fecha].begin(); it != agnd[fecha].end(); ++it) {
+		if (desde < it->first && it->first < hasta) {
+			lst.push_back(std::pair<Hora, std::string>(it->first, it->second));
+		}
+	}
+	for (auto it = lst.begin(); it != lst.end(); ++it) {
+		std::cout << it->first.hour << ':' << it->first.minutes << " -> " << it->second << "\n";
+	}
+	return lst;
+}
+
+void Agenda::elminarEventos(const Fecha &desde_fecha, const Hora& desde_hora, const Fecha& hasta_fecha, const Hora& hasta_hora) {
+	for (auto it = agnd.begin(); it != agnd.end(); ++it) {
+		if (desde_fecha < it->first && it->first < hasta_fecha) {
+			for (auto it2 = agnd[it->first].begin(); it2 != agnd[it->first].end(); ++it2) {
+				if (desde_hora < it2->first && it2->first < hasta_hora) {
+					agnd[it->first].erase(it2);
+				}
+			}
+		}		
+	}
 }
 
 
@@ -117,10 +144,23 @@ void main() {
 	const Hora time3(12, 57);
 	const Fecha date2(11, 1, 1997);
 	const Hora time2(12, 55);
+
+	//const Fecha date4(13, 1, 1997);
+	//const Hora time4(12, 36);
+	//const Fecha date5(14, 1, 1997);
+	//const Hora time5(13, 45);
+
+	const Hora min(12, 00), max(12, 59);
+	//const Fecha minF(10, 1, 1997), maxF(14, 1, 1997);
 	agn.insertarEvento(date3, time3, "Things to do");
 	agn.insertarEvento(date,time,"Things to do");
 	agn.insertarEvento(date2, time2, "Things to do");
-	agn.eventosDia(date);
+
+	//agn.insertarEvento(date4, time4, "Things to do");
+	//agn.insertarEvento(date5, time5, "Things to do");
+
+	//agn.elminarEventos(minF, min, maxF, max);
+	agn.eventosDia(date, min, max);
 	std::cout << agn.GetSize() << "\n";
 	std::cout << agn.GetEvtSize() << "\n";
 }
