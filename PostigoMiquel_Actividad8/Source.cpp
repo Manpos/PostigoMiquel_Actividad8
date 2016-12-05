@@ -84,15 +84,16 @@ void Agenda::insertarEvento(const Fecha& fecha, const Hora& hora, const std::str
 //Eventos dia segun fecha
 std::list<std::pair<Hora, std::string>> Agenda::eventosDia(const Fecha &fecha) {
 	std::list <std::pair<Hora, std::string >> lst;
-	
+
 	for (auto it = agnd[fecha].begin(); it != agnd[fecha].end(); ++it) {
-		lst.push_back(std::pair<Hora, std::string> (it->first, it->second));
+		lst.push_back(std::pair<Hora, std::string>(it->first, it->second));
 	}
 
 	for (auto it = lst.begin(); it != lst.end(); ++it) {
-		std::cout << it->first.hour << ':' << it->first.minutes << " -> " << it->second << "\n";
+		std::cout << fecha.day << "//" << fecha.month << " " << it->first.hour << ':' << it->first.minutes << " -> " << it->second << "\n";
 	}
-
+	
+	std::cout << "\n";
 	return lst;
 }
 
@@ -141,14 +142,14 @@ void main() {
 	const Fecha date3(11, 1);
 	const Hora time3(12, 57);
 
-	const Fecha date2(11, 1);
+	const Fecha date2(12, 1);
 	const Hora time2(12, 55);
 
-	const Fecha date4(30, 11);
+	const Fecha date4(13, 1);
 	const Hora time4(15, 45);
 
-	const Fecha date5(20, 3);
-	const Hora time5(13, 45);
+	const Fecha date5(13, 1);
+	const Hora time5(12, 45);
 
 	const Hora min(12, 00), max(12, 57);
 	const Fecha minF(10, 1), maxF(14, 1);
@@ -159,7 +160,13 @@ void main() {
 	agn.insertarEvento(date4, time4, "Pls work");
 	agn.insertarEvento(date5, time5, "Shit happens");
 	agn.eventosDia(date3);
+	agn.eventosDia(date2);
+	agn.eventosDia(date4);
+	agn.eventosDia(date5);
 	agn.elminarEventos(minF, min, maxF, max);
 	agn.eventosDia(date3);
+	agn.eventosDia(date2);
+	agn.eventosDia(date4);
+	agn.eventosDia(date5);
 	std::cout << agn.GetSize() << "\n";
 }
